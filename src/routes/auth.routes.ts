@@ -7,9 +7,8 @@ import validateFields from '../middlewares/validate-fields';
 const authRoutes = Router();
 
 authRoutes.post('/login', 
-    body('nickname')
-        .notEmpty().withMessage('This field cannot be empty.')
-        .matches(/^[a-z0-9]+([_][a-z0-9]+)*[_]?$/).withMessage('This field must contain only lowercase letters, numbers, and underscores.')
+    body('email')
+        .notEmpty().withMessage('This field cannot be empty.')        
         .trim(),
     body('password')
         .isLength({ min: 8 }).withMessage('This field must be at least 8 characters long.')

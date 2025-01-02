@@ -4,11 +4,11 @@ import { comparePassword, hashPassword } from "../utils/auth";
 import validateNickname from "../utils/nickname";
 
 const authenticateUser = async (req: Request, res: Response) => {
-    const { nickname } = req.body;
-    const user = await findUserByNickname(nickname);
+    const { email } = req.body;
+    const user = await findUserByEmail(email);
 
     if (!user) {
-        res.status(404).json({ message: "User not found" });
+        res.status(404).json({ message: "Credenciales incorrectas" });
         return;
     }
     
@@ -23,10 +23,16 @@ const authenticateUser = async (req: Request, res: Response) => {
 
 const createUser = async (req: Request, res: Response) => {
     const { email, nickname } = req.body;
-    const user = await findUserByEmailOrNickname(email, nickname);
+    const userByEMail = await findUserByEmail(email);
+    const userByNickname = await findUserByNickname(nickname);
         
-    if (user) {
-        res.status(409).json({ message: "User with this email or nickname already exists" });
+    if (userByEMail) {
+        res.status(409).json({ message: "Ya existe un usuario registrado con este email" });
+        return;
+    }
+
+    if (userByNickname) {
+        res.status(409).json({ message: "Ya existe un usuario registrado con este nickname" });
         return;
     }
 
@@ -41,13 +47,8 @@ const createUser = async (req: Request, res: Response) => {
     res.status(201).json({ message: "User created successfully" });
 }
 
-const findUserByEmailOrNickname = async (email: string, nickname: string): Promise<User | null> => {
-    return await User.findOne({
-        $or: [
-            { email },
-            { nickname }
-        ]
-    });
+const findUserByEmail = async (email: string): Promise<User | null> => {
+    return await User.findOne({ email });
 }
 
 const findUserByNickname = async (nickname: string): Promise<User | null> => {
