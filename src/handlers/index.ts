@@ -2,6 +2,7 @@ import User from "../models/User";
 import { Request, Response } from "express";
 import { comparePassword, hashPassword } from "../utils/auth";
 import validateNickname from "../utils/nickname";
+import { generateJWT } from "../utils/jwt";
 
 const authenticateUser = async (req: Request, res: Response) => {
     const { email } = req.body;
@@ -18,7 +19,8 @@ const authenticateUser = async (req: Request, res: Response) => {
         return;
     } 
 
-    res.status(200).json({ message: "User authenticated successfully" });
+    const token = generateJWT();    
+    res.status(200).json({ token });
 }
 
 const createUser = async (req: Request, res: Response) => {
