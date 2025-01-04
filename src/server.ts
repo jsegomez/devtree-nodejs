@@ -5,6 +5,7 @@ import cors from 'cors';
 
 import 'dotenv/config';
 import { corsConfig } from './config/cors';
+import { userRoutes } from './routes/user.routes';
 
 //Express
 const app = express();
@@ -20,6 +21,7 @@ app.use(express.json());
 
 // Routes
 app.use('/auth', authRoutes);
+app.use('/user', userRoutes);
 
 export default app;
 

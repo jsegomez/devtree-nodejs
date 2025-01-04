@@ -19,7 +19,7 @@ const authenticateUser = async (req: Request, res: Response) => {
         return;
     } 
 
-    const token = generateJWT();    
+    const token = generateJWT({ id: user._id });    
     res.status(200).json({ token });
 }
 
@@ -49,6 +49,17 @@ const createUser = async (req: Request, res: Response) => {
     res.status(201).json({ message: "User created successfully" });
 }
 
+const getUser = async (req: Request, res: Response) => {
+    const { id } = req.body;
+    const user = await User.findById(id).select('-password -__v -_id');
+    if (!user) {
+        res.status(404).json({ message: "Usuario no encontrado" });
+        return;
+    }
+    
+    res.status(200).json(user);
+}
+
 const findUserByEmail = async (email: string): Promise<User | null> => {
     return await User.findOne({ email });
 }
@@ -57,7 +68,7 @@ const findUserByNickname = async (nickname: string): Promise<User | null> => {
     return await User.findOne({ nickname });
 }
 
-export { createUser, authenticateUser, findUserByNickname };
+export { createUser, authenticateUser, findUserByNickname, getUser };
 
 
 

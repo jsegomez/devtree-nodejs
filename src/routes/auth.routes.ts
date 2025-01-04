@@ -45,6 +45,7 @@ authRoutes.post(
         .isLength({ min: 8 }).withMessage('This field must be at least 8 characters long.')
         .trim(),
     validateFields,
-    createUser);
+    createUser
+);
 
 export default authRoutes;
