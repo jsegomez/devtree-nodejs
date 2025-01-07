@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 import { User } from "../interfaces/user.interface";
 
 const userSchema = new Schema<User>({
@@ -29,6 +29,16 @@ const userSchema = new Schema<User>({
         type: String,
         required: true,
         trim: true,
+    },
+    description: {
+        type: String,
+        trim: true,
+        default: ''
+    },
+    image: {
+        type: String,
+        trim: true,
+        default: ''
     }
 });
 

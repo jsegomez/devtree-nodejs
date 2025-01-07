@@ -10,7 +10,7 @@ export const corsConfig: CorsOptions = {
             callback(new Error('Not allowed by cors'));            
         }
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']    
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']    
 }
 
 

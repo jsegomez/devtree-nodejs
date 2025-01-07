@@ -19,6 +19,3 @@ const validateJWT = (req: Request, res: Response, next: NextFunction) => {
 }
 
 export default validateJWT;
-
-
-

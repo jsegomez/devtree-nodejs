@@ -60,6 +60,29 @@ const getUser = async (req: Request, res: Response) => {
     res.status(200).json(user);
 }
 
+const updateUser = async (req: Request, res: Response) => {
+    const { id } = req.body;
+    const { nickname, description } = req.body;
+    const updateFields: Partial<{ nickname: string; description: string }> = {description, nickname};
+
+    const findByNickName = await findUserByNickname(nickname);
+
+    if (findByNickName && findByNickName._id.toString() !== id) {
+        res.status(409).json({ message: "Ya existe un usuario registrado con este nickname" });
+        return;
+    }
+
+    const user = await User.findByIdAndUpdate(id, updateFields, { new: true }).select('-password -__v -_id');
+
+    if (!user) {
+        res.status(404).json({ message: "Credenciales incorrectas" });
+        return;
+    }
+
+    res.status(200).json(user);
+}
+
+
 const findUserByEmail = async (email: string): Promise<User | null> => {
     return await User.findOne({ email });
 }
@@ -68,7 +91,7 @@ const findUserByNickname = async (nickname: string): Promise<User | null> => {
     return await User.findOne({ nickname });
 }
 
-export { createUser, authenticateUser, findUserByNickname, getUser };
+export { createUser, authenticateUser, findUserByNickname, getUser, updateUser };
 
 
 
