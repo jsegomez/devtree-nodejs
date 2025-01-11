@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { body } from "express-validator";
 
-import { getUser, updateUser } from "../handlers";
+import { getUser, updateUser, uploadImage } from "../handlers";
 import validateJWT from "../middlewares/validate-jwt.";
 
 const userRoutes = Router();
 
 userRoutes.get('/data-user', validateJWT, getUser);
+
 userRoutes.patch('/update-user',
     body('nickname')
         .isString().withMessage('This field must be a string.')
@@ -22,5 +23,7 @@ userRoutes.patch('/update-user',
     validateJWT,
     updateUser
 );
+
+userRoutes.post('/set-image', validateJWT, uploadImage)               
 
 export { userRoutes };

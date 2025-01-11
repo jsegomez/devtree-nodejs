@@ -1,8 +1,11 @@
-import User from "../models/User";
 import { Request, Response } from "express";
+import formidable from 'formidable'; 
+
+import User from "../models/User";
 import { comparePassword, hashPassword } from "../utils/auth";
 import validateNickname from "../utils/nickname";
 import { generateJWT } from "../utils/jwt";
+import cloudinary from "../config/cloudinary";
 
 const authenticateUser = async (req: Request, res: Response) => {
     const { email } = req.body;
@@ -82,6 +85,40 @@ const updateUser = async (req: Request, res: Response) => {
     res.status(200).json(user);
 }
 
+const uploadImage = async (req: Request, res: Response) => {
+    const { id } = req.body;
+    const form = formidable({multiples: false, maxFileSize: 1024 * 1024 * 10});
+
+    try {
+        form.parse(req, (err, fields, files) => {
+            if (err) {
+                console.error('Error procesando los datos:', err);
+                return res.status(400).json({ error: 'Error procesando los datos' });
+            }
+           
+            const image = files.avatar ? files.avatar[0] : null;
+
+            if (!image) {
+                return res.status(400).json({ error: 'No se ha encontrado ningún archivo' });
+            }else{
+                cloudinary.uploader.upload(image.filepath, {}, async function(error, image){
+                    if (error) {
+                        return res.status(500).json({ error: 'Error al subir la imagen' });
+                    }
+        
+                    if(image){                        
+                        const updateFields: Partial<{ image: string }> = {image: image.secure_url};                                                 
+                        const user = await User.findByIdAndUpdate(id, updateFields, { new: true }).select('-password -__v -_id');
+                        return res.status(200).json(user); 
+                    }
+                });
+            }
+        })        
+    } catch (error) {
+        res.status(500).json({ error: 'Error al procesar los datos', details: error });
+    }
+}
+
 
 const findUserByEmail = async (email: string): Promise<User | null> => {
     return await User.findOne({ email });
@@ -91,7 +128,7 @@ const findUserByNickname = async (nickname: string): Promise<User | null> => {
     return await User.findOne({ nickname });
 }
 
-export { createUser, authenticateUser, findUserByNickname, getUser, updateUser };
+export { createUser, authenticateUser, findUserByNickname, getUser, updateUser, uploadImage};
 
 
 
